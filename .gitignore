@@ -1,0 +1,9 @@
+venv/
+*/venv/
+__pycache__/
+*/__pycache__/
+*.pyc
+.vscode/
+*/.vscode/
+db.sqlite3
+*/db.sqlite3
