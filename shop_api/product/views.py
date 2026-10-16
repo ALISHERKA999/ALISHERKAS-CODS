@@ -1,7 +1,7 @@
 
 from rest_framework import generics
 from rest_framework.permissions import BasePermission, IsAuthenticated
-
+from common.validators import validate_product_birthdate
 from .models import Category, Product, Review
 from .permissions import IsModerator
 from .serializers import (
@@ -50,6 +50,9 @@ class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [ProductAccessPermission]
+    def create(self, request, *args, **kwargs):
+        validate_product_birthdate(request)
+        return super().create(request, *args, **kwargs)
 
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):

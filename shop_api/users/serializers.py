@@ -10,7 +10,20 @@ from rest_framework import serializers
 from .models import ConfirmationCode
 from .validators import validate_phone_number
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["birthdate"] = (
+            user.birthdate.isoformat()
+            if user.birthdate
+            else None
+        )
+        return token
+    
 User = get_user_model()
 
 
@@ -127,3 +140,19 @@ class LoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+    
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["birthdate"] = (
+            user.birthdate.isoformat()
+            if user.birthdate
+            else None
+        )
+        return token
+

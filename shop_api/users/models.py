@@ -42,11 +42,16 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
+    birthdate = models.DateField(null=True, blank=True)
     phone_number = models.CharField(
         max_length=12,
         validators=[validate_phone_number],
         blank=True
     )
+    birthdate = models.DateField(
+    null=True,
+    blank=True
+)
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='custom_users',
