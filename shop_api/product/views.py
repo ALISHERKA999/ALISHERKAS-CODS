@@ -1,12 +1,38 @@
+
 from rest_framework import generics
+from rest_framework.permissions import BasePermission, IsAuthenticated
 
 from .models import Category, Product, Review
+from .permissions import IsModerator
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
     ReviewSerializer,
     ProductReviewsSerializer
 )
+
+
+class ProductAccessPermission(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
+
+        if not request.user.is_authenticated:
+            return False
+
+        if request.user.is_staff:
+            return IsModerator().has_permission(request, view)
+
+        return request.method == 'POST'
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
+
+        if request.user.is_staff:
+            return IsModerator().has_permission(request, view)
+
+        return False
 
 
 class CategoryListCreateView(generics.ListCreateAPIView):
@@ -23,11 +49,13 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [ProductAccessPermission]
 
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [ProductAccessPermission]
     lookup_field = 'id'
 
 
